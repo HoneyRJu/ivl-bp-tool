@@ -14,3 +14,9 @@
 python export_bo.py         # 主页
 python export_reports.py    # 报告
 python patch_nav.py         # 补导航
+
+## 在线地址
+
+https://honeyrju.github.io/ivl-bp-tool/
+
+部署于 GitHub Pages 仓库 `HoneyRJu/ivl-bp-tool`，更新后重新提交即可，链接不变。
