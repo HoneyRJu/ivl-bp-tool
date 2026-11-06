@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>数据来源 · 第五人格 IVL</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0f1117;color:#e6e8ee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:28px 24px 72px}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:26px;border-bottom:1px solid #1e2230;padding-bottom:14px}
+.nav a{color:#8d94a8;text-decoration:none;font-size:13.5px;padding:7px 14px;border-radius:8px;border:1px solid transparent}
+.nav a:hover{background:#151823;color:#c8ccd8}
+.nav a.on{background:#151823;color:#e6e8ee;border-color:#232838}
+h1{font-size:24px;margin:6px 0 18px}
+h2{font-size:17px;margin:30px 0 12px;color:#dfe3ee;border-left:3px solid #3d6bff;padding-left:10px}
+h3{font-size:15px;margin:22px 0 10px;color:#c8ccd8}
+p,li{font-size:14.5px;line-height:1.85;color:#b9bfd0}
+strong{color:#e6e8ee}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0 20px}
+th{text-align:left;color:#7d8395;font-size:11.5px;font-weight:600;padding:8px;border-bottom:1px solid #2a2f3d}
+td{padding:8px;border-bottom:1px solid #1c2130;font-variant-numeric:tabular-nums}
+tr:hover td{background:#161a24}
+blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid #2f3547;background:#141721;color:#aab0c0;font-size:14px}
+code{background:#1a1f2b;padding:2px 6px;border-radius:4px;font-size:13px;color:#9fc0ff}
+pre{background:#141721;border:1px solid #1f2431;border-radius:10px;padding:14px 16px;overflow:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid #1e2230;margin:28px 0}
+ul,ol{padding-left:22px}
+footer{color:#4f5668;font-size:11.5px;margin-top:40px;text-align:center}
+</style></head><body><div class="wrap">
+<nav class="nav">
+  <a href="index.html" class="">推荐器</a>
+  <a href="report-quickdown.html" class="">秒倒特征</a>
+  <a href="report-causal.html" class="">因果分析</a>
+  <a href="report-tempo.html" class="">时间与破译</a>
+  <a href="coach-bp.html" class="">教练保平BP</a>
+  <a href="report-source.html" class="on">数据来源</a>
+</nav>
+<h1>数据来源</h1>
+
+<p>这个站上的每一个数字，都能追到下面三个文件、一行 SQL 过滤条件。</p>
+<h2>一、原始数据从哪来</h2>
+<p><strong>第五人格BWIKI 赛事数据查询系统 2.0</strong>（页面入口 <code>match2.dwrg.wiki</code>，实际部署在 <code>website.homeworkkun.top/赛事数据展示/2.0</code>）。</p>
+<p>这个站不是爬网页，而是直接下载它的数据底座——页面本身用 sql.js 在浏览器里查询 SQLite：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>内容</th>
+<th>大小</th>
+<th>SHA256 前 16 位</th>
+<th>本地抓取日</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>all.db</code></td>
+<td>全量赛事库（87 项赛事 / 2914 场对局 / 16626 半场）</td>
+<td>8.8 MB</td>
+<td><code>16E420F38F463794</code></td>
+<td>2026-11-05</td>
+</tr>
+<tr>
+<td><code>c4706250c17fe65e.db</code></td>
+<td>增量库：2026IVL夏季赛季后赛</td>
+<td>0.1 MB</td>
+<td><code>69EC9FAC2BC1CC4D</code></td>
+<td>2026-11-05</td>
+</tr>
+<tr>
+<td><code>cbf5780a067ea155.db</code></td>
+<td>增量库：2026IVL秋季赛常规赛</td>
+<td>0.2 MB</td>
+<td><code>7F0A93F7DCE9B46F</code></td>
+<td>2026-11-05</td>
+</tr>
+</tbody>
+</table>
+<p>增量库地址来自 <code>https://ossmatchdata.homeworkkun.top/matchdata/v1/index.json</code>，
+该索引的生成时间是 <strong>2026-11-02 20:54</strong>，这就是本项目的<strong>数据快照时间</strong>。</p>
+<h2>二、用了哪一部分</h2>
+<pre><code class="language-sql">SELECT * FROM records WHERE tournament LIKE '2026IVL%'
+</code></pre>
+<p>命中 <strong>894 个半场 / 146 场对局</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>赛事</th>
+<th>对局</th>
+<th>半场</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026IVL夏季赛常规赛</td>
+<td>93</td>
+<td>553</td>
+</tr>
+<tr>
+<td>2026IVL夏季赛季后赛</td>
+<td>8</td>
+<td>77</td>
+</tr>
+<tr>
+<td>2026IVL秋季赛常规赛</td>
+<td>45</td>
+<td>264</td>
+</tr>
+</tbody>
+</table>
+<p>实际比赛日期范围：<strong>2026-06-05 ~ 2026-11-01</strong>。
+秋季赛季后赛尚未开打，库里没有。</p>
+<h2>三、关键字段怎么解释</h2>
+<h3>1. 胜负（全站三口径的基础）</h3>
+<p>原始库 <code>win_side</code> 字段在增量库里<strong>整列为空</strong>（共 341 条）。处理规则：</p>
+<ul>
+<li><code>win_side</code> 有值 → 直接用</li>
+<li>否则看 <code>winner</code>：等于 <code>survivor_team</code> → 人胜；等于 <code>hunter_team</code> → 屠胜；<code>平局</code> → 平</li>
+</ul>
+<p>回填后全库分布：<strong>平 423 / 屠 359 / 人 112</strong>。</p>
+<h3>2. BAN 的四个字段（列名容易误读）</h3>
+<table>
+<thead>
+<tr>
+<th>原始列</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gban_p*</code></td>
+<td>全局 BAN · 被禁的<strong>求生者</strong>角色</td>
+</tr>
+<tr>
+<td><code>gban_h*</code></td>
+<td>全局 BAN · 被禁的<strong>监管者</strong>角色</td>
+</tr>
+<tr>
+<td><code>p_ban*</code></td>
+<td>针对 BAN · 被禁的<strong>求生者</strong>角色</td>
+</tr>
+<tr>
+<td><code>h_ban*</code></td>
+<td>针对 BAN · 被禁的<strong>监管者</strong>角色</td>
+</tr>
+</tbody>
+</table>
+<p><code>p</code> / <code>h</code> 指<strong>被禁角色的阵营</strong>，不是「谁在 ban」。已用角色池交叉验证：<code>gban_h*</code> 的值 100% 落在监管者池，<code>gban_p*</code> 100% 落在求生者池。</p>
+<h3>3. 「秒倒」是代理指标</h3>
+<p>数据库<strong>没有记录「第一个被追击的人」</strong>，所以用：</p>
+<blockquote>
+<p><strong>最早被淘汰者的牵制时长 ≤ 30 秒</strong></p>
+</blockquote>
+<p>作为代理，命中 170 场。这是全站最大的测量误差来源，已在报告中标注。</p>
+<h3>4. 三种胜率</h3>
+<table>
+<thead>
+<tr>
+<th>口径</th>
+<th>公式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>胜率</td>
+<td>胜 / 总场次</td>
+</tr>
+<tr>
+<td>胜平率</td>
+<td>(胜 + 平) / 总场次</td>
+</tr>
+<tr>
+<td>去平胜率</td>
+<td>胜 / (胜 + 负)</td>
+</tr>
+</tbody>
+</table>
+<h2>三之补：数据可靠性到底能保证到什么程度</h2>
+<h3>来源性质（必须先说清）</h3>
+<p>这套数据来自 <strong>第五人格BWIKI</strong>，是 bilibili 社区 wiki，运营方「夜莺小姐档案馆」自述为
+<strong>与官方有合作的民间组织</strong>，并在每篇数据帖里注明：</p>
+<blockquote>
+<p>本数据由非官方组织第五人格BWIKI整理，不代表官方数据，请以官方公布的数据为准。</p>
+</blockquote>
+<p>所以准确的表述是：<strong>这是目前唯一可机读的 wiki 级整理版，不是官方直出数据。</strong>
+官方（id5.163.com 赛事中心）没有公开的结构化 BP 数据接口，无法做逐条对拷。</p>
+<h3>能保证的（已用脚本验证）</h3>
+<table>
+<thead>
+<tr>
+<th>检查项</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>每半场恰好 4 求生者 + 1 监管者</td>
+<td>894/894 通过</td>
+</tr>
+<tr>
+<td>同队角色不重复</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>监管者不出现在求生者阵容</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>胜方 ∈ {主队, 客队, 平局}</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>同一对局的 BO 序号连续</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>同一半场地图唯一</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>全局 BAN 数量不超规则上限</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>BO1 无全局 BAN（规则）</td>
+<td>通过</td>
+</tr>
+<tr>
+<td>重复记录</td>
+<td>0 条</td>
+</tr>
+<tr>
+<td>角色池交叉污染</td>
+<td>0 个（25 监管者 / 47 求生者）</td>
+</tr>
+</tbody>
+</table>
+<p>可复现：<code>python validate_bp.py</code>，当前输出 <strong>问题类别 0 个</strong>。</p>
+<h3>不能保证的（源数据缺口，已在页面标注）</h3>
+<table>
+<thead>
+<tr>
+<th>缺口</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>季后赛、秋季赛的 <code>比分</code> 字段全为空（77 + 264 条）</td>
+<td>只影响比分展示，胜负由 <code>winner</code> 字段给出</td>
+</tr>
+<tr>
+<td>「全局 BAN」仅夏季赛常规赛记录（367/553）</td>
+<td>其余场次的全局 BAN 卡片显示「无记录」</td>
+</tr>
+<tr>
+<td>没有「首倒时刻」「逐分钟机数」</td>
+<td>秒倒只能用代理指标，因果只能到「稳健相关」</td>
+</tr>
+</tbody>
+</table>
+<h3>结论</h3>
+<p><strong>「与源库完全一致 + 结构自洽」是可以保证的；「与官方记录逐条一致」无法保证</strong>，
+因为官方没有公开数据可供对拷。若要更高置信度，只能人工逐场对照官方录像/战报，
+那是另一个量级的工程。</p>
+<h2>四、已知的数据缺口（不是 bug，是源数据没有）</h2>
+<table>
+<thead>
+<tr>
+<th>缺口</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>「全局 BAN」只在 2026 夏季赛常规赛有记录（367/553），季后赛与秋季赛整列为空</td>
+<td>该分类的百分比分母改用「有记录的场次」</td>
+</tr>
+<tr>
+<td>秋季赛季后赛未开打</td>
+<td>范围里没有这一档</td>
+</tr>
+<tr>
+<td><code>use_time</code>、<code>dec</code> 是赛后统计，不是逐分钟时间轴</td>
+<td>无法做事件史分析，因果只能到「稳健相关」</td>
+</tr>
+<tr>
+<td>无选手 id 的跨场能力值</td>
+<td>无法用选手固定效应，只能退到队伍固定效应</td>
+</tr>
+</tbody>
+</table>
+<h2>五、怎么验证</h2>
+<p>两个审计脚本，重算所有页面数字并与页面比对：</p>
+<pre><code class="language-bash">python audit.py          # 36 个关键指标
+python audit_tables.py   # 96 个表格单元格
+</code></pre>
+<p>最近一次运行结果：</p>
+<pre><code>检查项 36 个，不一致 0 个
+表格审计：检查 96 个单元格，不一致 0 个
+</code></pre>
+<p><strong>审计过程中确实抓到过 2 处错误</strong>（「时间与破译」里的用时匹配对数 59→60、破译差 +26→+25，原因是早期用了 165 场的子样本算，正文却写 170 场），已在 2026-11-05 修正并重新导出。</p>
+<h2>六、复现步骤</h2>
+<pre><code class="language-bash"># 1. 下载源库（见 README）
+# 2. 生成结构化数据集
+python build_bp_dataset.py      # -&gt; data/bp_records.json
+# 3. 生成分析
+python analyze_quickdown.py     # 秒倒特征
+python causal_quickdown.py      # 因果
+# 4. 审计
+python audit.py &amp;&amp; python audit_tables.py
+# 5. 导出静态站
+python export_static.py &amp;&amp; python export_reports.py
+</code></pre>
+<footer>数据：2026 IVL 894 个半场 · 第五人格BWIKI 赛事数据库</footer>
+</div></body></html>

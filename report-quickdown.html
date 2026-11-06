@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>秒倒特征 · 第五人格 IVL</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0f1117;color:#e6e8ee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:28px 24px 72px}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:26px;border-bottom:1px solid #1e2230;padding-bottom:14px}
+.nav a{color:#8d94a8;text-decoration:none;font-size:13.5px;padding:7px 14px;border-radius:8px;border:1px solid transparent}
+.nav a:hover{background:#151823;color:#c8ccd8}
+.nav a.on{background:#151823;color:#e6e8ee;border-color:#232838}
+h1{font-size:24px;margin:6px 0 18px}
+h2{font-size:17px;margin:30px 0 12px;color:#dfe3ee;border-left:3px solid #3d6bff;padding-left:10px}
+h3{font-size:15px;margin:22px 0 10px;color:#c8ccd8}
+p,li{font-size:14.5px;line-height:1.85;color:#b9bfd0}
+strong{color:#e6e8ee}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0 20px}
+th{text-align:left;color:#7d8395;font-size:11.5px;font-weight:600;padding:8px;border-bottom:1px solid #2a2f3d}
+td{padding:8px;border-bottom:1px solid #1c2130;font-variant-numeric:tabular-nums}
+tr:hover td{background:#161a24}
+blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid #2f3547;background:#141721;color:#aab0c0;font-size:14px}
+code{background:#1a1f2b;padding:2px 6px;border-radius:4px;font-size:13px;color:#9fc0ff}
+pre{background:#141721;border:1px solid #1f2431;border-radius:10px;padding:14px 16px;overflow:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid #1e2230;margin:28px 0}
+ul,ol{padding-left:22px}
+footer{color:#4f5668;font-size:11.5px;margin-top:40px;text-align:center}
+</style></head><body><div class="wrap">
+<nav class="nav">
+  <a href="index.html" class="">推荐器</a>
+  <a href="report-quickdown.html" class="">秒倒特征</a>
+  <a href="report-causal.html" class="">因果分析</a>
+  <a href="report-tempo.html" class="">时间与破译</a>
+  <a href="coach-bp.html" class="">教练保平BP</a>
+  <a href="report-source.html" class="">数据来源</a>
+</nav>
+<h1>秒倒特征</h1>
+
+<p>数据：2026 IVL 夏季赛常规赛 + 夏季季后赛 + 秋季赛常规赛，共 894 个半场（893 个有完整选手数据）。
+脚本：<code>analyze_quickdown.py</code></p>
+<h2>0. 口径说明</h2>
+<p>数据库<strong>没有记录「第一个被追击的人」</strong>，所以用「本局最早被淘汰者的牵制时长」做代理：</p>
+<ul>
+<li><strong>秒倒</strong> = 最早死亡的那名求生者，牵制时长 ≤ 30 秒</li>
+<li>该口径命中 170 场，占 19.0%</li>
+</ul>
+<p>另外，平局在计分上就等于「恰好淘汰 2 人」，所以「淘汰数 = 2」与「保平」是同一件事，不能当结论。</p>
+<h2>1. 秒倒之后，结果分布</h2>
+<table>
+<thead>
+<tr>
+<th>结果</th>
+<th>场次</th>
+<th>占比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>屠夫胜（3–4 抓）</td>
+<td>104</td>
+<td>61.2%</td>
+</tr>
+<tr>
+<td>平局（2 抓）</td>
+<td>60</td>
+<td>35.3%</td>
+</tr>
+<tr>
+<td>求生者胜（3–4 跑）</td>
+<td>6</td>
+<td>3.5%</td>
+</tr>
+</tbody>
+</table>
+<p>结论一：<strong>秒倒基本判了人队死刑，但没判死</strong>。三分之一的局能保平，翻盘几乎不可能。</p>
+<h2>2. 保平 vs 屠胜：差在哪</h2>
+<table>
+<thead>
+<tr>
+<th>指标（中位数）</th>
+<th>保平</th>
+<th>屠胜</th>
+<th>差</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>总破译</td>
+<td>540</td>
+<td>533</td>
+<td>+7（几乎相同）</td>
+</tr>
+<tr>
+<td>总救援</td>
+<td>2</td>
+<td>3</td>
+<td>−1</td>
+</tr>
+<tr>
+<td>总治疗</td>
+<td>0</td>
+<td>0</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>用时（秒）</strong></td>
+<td><strong>302</strong></td>
+<td><strong>384</strong></td>
+<td><strong>−82</strong></td>
+</tr>
+<tr>
+<td>其余三人牵制和</td>
+<td>148</td>
+<td>183</td>
+<td>−35</td>
+</tr>
+</tbody>
+</table>
+<p>结论二：<strong>分水岭不是「修得快」，是「结束得早」。</strong></p>
+<p>破译总量几乎一样（540 vs 533），但保平局平均早结束 82 秒。换句话说，
+秒倒之后的保平不是靠「把机器修完」，而是靠「在屠夫滚起来之前把比赛结束掉」。</p>
+<p>结论三：<strong>保平局救援更少</strong>（2 次 vs 3 次）。多救一次并不带来平局，反而延长了拉扯时间。</p>
+<h2>3. 地图维度</h2>
+<table>
+<thead>
+<tr>
+<th>地图</th>
+<th>秒倒场次</th>
+<th>保平率</th>
+<th>屠胜率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>唐人街</td>
+<td>12</td>
+<td>50.0%</td>
+<td>41.7%</td>
+</tr>
+<tr>
+<td>里奥的回忆</td>
+<td>14</td>
+<td>42.9%</td>
+<td>50.0%</td>
+</tr>
+<tr>
+<td>永眠镇</td>
+<td>45</td>
+<td>42.2%</td>
+<td>53.3%</td>
+</tr>
+<tr>
+<td>月亮河公园</td>
+<td>37</td>
+<td>32.4%</td>
+<td>64.9%</td>
+</tr>
+<tr>
+<td>红教堂</td>
+<td>12</td>
+<td>25.0%</td>
+<td>75.0%</td>
+</tr>
+<tr>
+<td>湖景村</td>
+<td>27</td>
+<td>25.9%</td>
+<td>74.1%</td>
+</tr>
+<tr>
+<td>不归林</td>
+<td>17</td>
+<td>17.6%</td>
+<td>82.4%</td>
+</tr>
+</tbody>
+</table>
+<p>同样的 82 秒差距在每张图上都成立（例如永眠镇 290s vs 386s），说明这不是地图造成的假象。</p>
+<p>不归林最致命：秒倒之后 82.4% 被三抓以上。唐人街最能止损。</p>
+<h2>4. 监管者维度</h2>
+<table>
+<thead>
+<tr>
+<th>监管者</th>
+<th>秒倒场次</th>
+<th>保平率</th>
+<th>屠胜率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>杂货商</td>
+<td>9</td>
+<td>77.8%</td>
+<td>22.2%</td>
+</tr>
+<tr>
+<td>牙医</td>
+<td>14</td>
+<td>50.0%</td>
+<td>50.0%</td>
+</tr>
+<tr>
+<td>歌剧演员</td>
+<td>31</td>
+<td>38.7%</td>
+<td>58.1%</td>
+</tr>
+<tr>
+<td>台球手</td>
+<td>10</td>
+<td>30.0%</td>
+<td>60.0%</td>
+</tr>
+<tr>
+<td>跛脚羊</td>
+<td>18</td>
+<td>27.8%</td>
+<td>66.7%</td>
+</tr>
+<tr>
+<td>时空之影</td>
+<td>11</td>
+<td>27.3%</td>
+<td>72.7%</td>
+</tr>
+<tr>
+<td>女王蜂</td>
+<td>30</td>
+<td>26.7%</td>
+<td>70.0%</td>
+</tr>
+<tr>
+<td>喧嚣</td>
+<td>15</td>
+<td>13.3%</td>
+<td>80.0%</td>
+</tr>
+</tbody>
+</table>
+<p>滚雪球能力最强的：喧嚣（80%）、湖景村＋不归林这种图。最不擅长扩大优势的：杂货商。</p>
+<h2>5. 秒倒者角色维度</h2>
+<table>
+<thead>
+<tr>
+<th>被秒倒的角色</th>
+<th>场次</th>
+<th>保平率</th>
+<th>屠胜率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>弓箭手</td>
+<td>11</td>
+<td>54.5%</td>
+<td>45.5%</td>
+</tr>
+<tr>
+<td>飞行家</td>
+<td>10</td>
+<td>50.0%</td>
+<td>40.0%</td>
+</tr>
+<tr>
+<td>气象学家</td>
+<td>12</td>
+<td>33.3%</td>
+<td>66.7%</td>
+</tr>
+<tr>
+<td>幻灯师</td>
+<td>13</td>
+<td>30.8%</td>
+<td>69.2%</td>
+</tr>
+<tr>
+<td>病患</td>
+<td>11</td>
+<td>27.3%</td>
+<td>63.6%</td>
+</tr>
+<tr>
+<td>斗牛士</td>
+<td>8</td>
+<td>12.5%</td>
+<td>87.5%</td>
+</tr>
+</tbody>
+</table>
+<p>斗牛士被秒倒最伤（87.5% 屠胜），弓箭手/飞行家被秒倒反而有一半能保平——
+推测是这两个位置「死了不影响修机结构」，队伍可以直接转成 3 人运营。</p>
+<h2>6. 秒倒时长维度</h2>
+<table>
+<thead>
+<tr>
+<th>死亡时间</th>
+<th>场次</th>
+<th>保平率</th>
+<th>屠胜率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–10s</td>
+<td>15</td>
+<td>26.7%</td>
+<td>66.7%</td>
+</tr>
+<tr>
+<td>11–20s</td>
+<td>58</td>
+<td>29.3%</td>
+<td>63.8%</td>
+</tr>
+<tr>
+<td>21–30s</td>
+<td>97</td>
+<td>40.2%</td>
+<td>58.8%</td>
+</tr>
+</tbody>
+</table>
+<p>同样是「秒倒」，20 秒和 30 秒的差距很实在：保平率从 29% 抬到 40%。</p>
+<h2>7. 可操作的结论</h2>
+<ol>
+<li><strong>秒倒后不要拖。</strong> 保平局平均 302 秒结束，屠胜局 384 秒。多出来的 80 秒不是「运营」，是「被逐个击破」。</li>
+<li><strong>少救一次。</strong> 保平局救援中位 2 次，屠胜局 3 次。第三次救往往是送节奏。</li>
+<li><strong>看图和监管者决策。</strong> 不归林/湖景村/红教堂秒倒后应该直接转「卖人保平」，不要让第二个也倒；遇到喧嚣、女王蜂，第一个人倒地的瞬间就要放弃翻盘念头。</li>
+<li><strong>斗牛士不能先死。</strong> 这个位置被秒倒，87.5% 直接三抓以上。</li>
+</ol>
+<h2>8. 局限</h2>
+<ul>
+<li><strong>相关性不等于因果。</strong> 用时 384 秒的屠胜局，也可能是「屠夫已经稳赢，所以慢慢打」，而不是「拖久了才输」。要证明因果需要按时间轴切片的逐分钟数据，公开数据里没有。</li>
+<li><strong>代理变量有噪声。</strong> 「最早死亡者的牵制时长」不等于「首追被秒倒」，有些局第一个人是救援时被换倒的。</li>
+<li><strong>样本量。</strong> 屠胜 104 / 保平 60，地图与监管者的细分格子里很多 n&lt;15，只能看方向。</li>
+</ul>
+<footer>数据：2026 IVL 894 个半场 · 第五人格BWIKI 赛事数据库</footer>
+</div></body></html>

@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第五人格 IVL · 教练保平 BP 工作台</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0f1117;color:#e6e8ee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 22px 60px}
+header{border-bottom:1px solid #1e2230;padding-bottom:16px;margin-bottom:18px}
+h1{margin:0;font-size:20px;letter-spacing:.5px}
+.meta{color:#6f7689;font-size:12.5px;line-height:1.7;margin-top:6px}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid #1e2230;padding-bottom:12px}
+.nav a{color:#8d94a8;text-decoration:none;font-size:13.5px;padding:7px 14px;border-radius:8px;border:1px solid transparent}
+.nav a:hover{background:#151823;color:#c8ccd8}
+.nav a.on{background:#151823;color:#e6e8ee;border-color:#232838}
+h2{font-size:12.5px;color:#8d94a8;font-weight:600;letter-spacing:.6px;margin:0 0 12px;text-transform:uppercase}
+h3{font-size:14px;margin:0 0 8px;color:#e6e8ee}
+.card{background:#141721;border:1px solid #1f2431;border-radius:14px;padding:18px 20px;margin-bottom:16px}
+.sub{color:#6f7689;font-size:12.5px;margin-top:8px;line-height:1.7}
+select{background:#151823;border:1px solid #232838;color:#e6e8ee;padding:8px 11px;border-radius:8px;font-size:13.5px;outline:none}
+select:focus{border-color:#3d6bff}
+.frow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grow{flex:1}
+button{background:#3d6bff;border:0;color:#fff;padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer}
+button:hover{background:#527dff}
+button.ghost{background:#232838}
+button.ghost:hover{background:#2c3244}
+button.sm{padding:6px 12px;font-size:12.5px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.chip{background:#151823;border:1px solid #232838;color:#9aa2b8;padding:6px 11px;border-radius:7px;font-size:12.5px;cursor:pointer;user-select:none;transition:.1s}
+.chip:hover{border-color:#3d6bff;color:#c8ccd8}
+.chip.on{background:#17233f;border-color:#3d6bff;color:#9fb6ff;font-weight:600}
+.chip.role-s.on{background:#12291d;border-color:#2f7a4e;color:#7fdc9e}
+.chip.role-h.on{background:#2a171a;border-color:#7a3138;color:#f09a96}
+.chip.banned{opacity:.38;text-decoration:line-through;border-style:dotted;border-color:#4a2428}
+.chip.banmark{background:#2a171a;border-color:#7a3138;color:#e0807c;text-decoration:line-through}
+.chip.dead{opacity:.25;pointer-events:none;text-decoration:line-through}
+.chip.pick{background:#12291d;border-color:#2f7a4e;color:#7fdc9e;font-weight:600}
+.chip.off-pool{opacity:.55;border-style:dashed}
+.chip.sm{padding:5px 9px;font-size:12px}
+.tag{font-size:11px;padding:2px 7px;border-radius:5px;font-weight:600;display:inline-block}
+.tag.amber{background:#2a2113;color:#e0a33e;border:1px solid #3b2d15}
+.tag.cyan{background:#0f2430;color:#4fc3d9;border:1px solid #14323f}
+.tag.green{background:#12291d;color:#5fd08a;border:1px solid #1d4730}
+.tag.red{background:#2a171a;color:#e0807c;border:1px solid #4a2428}
+.tag.gray{background:#1a1d27;color:#8d94a8;border:1px solid #262b38}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:#6f7689;font-size:11px;font-weight:600;padding:0 7px 8px;border-bottom:1px solid #1f2431}
+td{padding:8px 7px;border-bottom:1px solid #191d29;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+tr:hover td{background:#181c27}
+td.name{color:#c8ccd8}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;background:#1a2130;color:#8fb0ff}
+.pill.hi{background:#12291d;color:#5fd08a}
+.pill.lo{background:#2a171a;color:#e0807c}
+.bar{height:6px;background:#1c2130;border-radius:4px;overflow:hidden;min-width:60px}
+.bar i{display:block;height:100%;border-radius:4px}
+.bar i.green{background:linear-gradient(90deg,#1f7f4a,#5fd08a)}
+.bar i.red{background:linear-gradient(90deg,#7a2a2a,#e0807c)}
+.note{color:#6f7689;font-size:12px;line-height:1.8}
+.note b{color:#9aa2b8}
+.warn{color:#c08b3e;font-size:12.5px;margin-top:10px;line-height:1.7}
+.empty{color:#5f6577;font-size:13px;padding:6px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+footer{color:#4f5668;font-size:11.5px;margin-top:22px;text-align:center;line-height:1.9}
+
+/* 标签页 */
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{background:#151823;border:1px solid #232838;color:#8d94a8;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer}
+.tab.on{background:#17233f;border-color:#3d6bff;color:#cfe0ff}
+.panel{display:none}
+.panel.on{display:block}
+
+/* 实时 BP */
+.bosteps{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}
+.bostep{flex:1;min-width:88px;background:#151823;border:1px solid #232838;border-radius:8px;padding:8px 10px;font-size:11.5px;color:#6f7689;text-align:center;line-height:1.5}
+.bostep.now{background:#17233f;border-color:#3d6bff;color:#cfe0ff;font-weight:600}
+.bostep.done{background:#12291d;border-color:#1d4730;color:#5fd08a}
+.slots{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.slot{min-width:74px;background:#101420;border:1px dashed #262b38;border-radius:8px;padding:8px 10px;font-size:12.5px;color:#4f5668;text-align:center}
+.slot.filled{border-style:solid;border-color:#2f7a4e;background:#12291d;color:#7fdc9e}
+.slot.hb{min-width:66px}
+.slot.hb.filled{border-color:#7a3138;background:#2a171a;color:#e0807c}
+.slot.ab{min-width:66px}
+.slot.ab.filled{border-color:#7a3138;background:#2a171a;color:#f09a96}
+.liveline{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.liveline .k{font-size:12px;color:#6f7689}
+.livehint{background:#101420;border:1px solid #1f2431;border-radius:10px;padding:12px 14px;font-size:13px;color:#aab0c0;line-height:1.8}
+.livehint b{color:#e6e8ee}
+</style></head><body><div class="wrap">
+<nav class="nav">
+  <a href="index.html">推荐器</a>
+  <a href="report-quickdown.html">秒倒特征</a>
+  <a href="report-causal.html">因果分析</a>
+  <a href="report-tempo.html">时间与破译</a>
+  <a href="coach-bp.html" class="on">教练保平BP</a>
+  <a href="report-source.html" class="">数据来源</a>
+</nav>
+<header>
+  <h1>教练保平 BP 工作台</h1>
+  <div class="meta">赛前设置 → 实时 BP · 数据源：2026 IVL 894 个半场</div>
+</header>
+
+<div class="tabs">
+  <div class="tab on" id="tabSetup" onclick="switchTab('setup')">① 赛前设置</div>
+  <div class="tab" id="tabLive" onclick="switchTab('live')">② 实时 BP</div>
+</div>
+
+<!-- ================= 模块一：赛前设置 ================= -->
+<div class="panel on" id="panelSetup">
+
+<div class="card">
+  <h2>基本信息</h2>
+  <div class="frow">
+    <label style="font-size:13px;color:#8d94a8">我们是</label>
+    <select id="identity"><option value="home">主队（主场）</option><option value="away">客队（客场）</option></select>
+    <label style="font-size:13px;color:#8d94a8">赛制范围</label>
+    <select id="tour">
+      <option value="all">全部 2026 IVL（894 半场）</option>
+      <option value="autumn">仅秋季赛常规赛</option>
+      <option value="summer">仅夏季赛</option>
+    </select>
+    <label style="font-size:13px;color:#8d94a8">本局地图</label>
+    <select id="map"><option value="">全部地图</option></select>
+  </div>
+  <div class="frow" style="margin-top:12px">
+    <span class="sub" style="margin:0">预设自动保存：角色池 / 屠夫池 / 熟练度 / 已消耗 / 地图标记 / 对局记录（<b>不含主客身份</b>）</span>
+    <div class="grow"></div>
+    <button class="ghost sm" onclick="clearPreset(true)">清除预设</button>
+    <button class="ghost sm" onclick="resetAll()">快速重置</button>
+  </div>
+</div>
+
+<div class="card">
+  <h2>我方角色池（点选）</h2>
+  <div class="chips" id="pool"></div>
+  <div class="sub">已选 <b id="poolcnt">0</b> 个 · 绿框=求生者 · 划线的表示已被全局 BAN</div>
+</div>
+
+<div class="card">
+  <h2>对手屠夫池 + 熟练度</h2>
+  <div class="chips" id="hunters"></div>
+  <div class="sub">已选 <b id="hcnt">0</b> 个 · 红框=监管者</div>
+  <div id="profList" style="margin-top:12px"></div>
+</div>
+
+<div class="card">
+  <h2>全局 BAN / 已消耗（点一下即标记）</h2>
+  <div class="sub" style="margin:0 0 6px">求生者 · 已禁 <b id="bsCnt">0</b> 个</div>
+  <div class="chips" id="banS"></div>
+  <div class="sub" style="margin:14px 0 6px">监管者 · 已禁 <b id="bhCnt">0</b> 个</div>
+  <div class="chips" id="banH"></div>
+  <div class="frow" style="margin-top:14px">
+    <button class="ghost sm" onclick="clearBans()">清空已禁</button>
+    <span class="sub" style="margin:0">被禁的角色会从推荐中排除</span>
+  </div>
+</div>
+
+<div class="card">
+  <h2>地图 BAN / 选图</h2>
+  <div class="sub" style="margin-bottom:10px">点选地图 = 标记为已禁 / 已打过</div>
+  <div class="chips" id="mapChips"></div>
+  <div class="frow" style="margin-top:14px">
+    <span class="sub" style="margin:0">对手图偏好</span>
+    <select id="oppMapMode"><option value="unknown">未知——只用我方数据</option><option value="hunter">指定对手屠夫</option></select>
+    <select id="oppMapHunter" style="display:none"></select>
+  </div>
+  <div id="mapOut" style="margin-top:14px"></div>
+</div>
+
+</div><!-- /panelSetup -->
+
+<!-- ================= 模块二：实时 BP ================= -->
+<div class="panel" id="panelLive">
+
+<div class="card">
+  <div class="liveline">
+    <span class="k">当前局</span>
+    <div class="frow" style="gap:6px">
+      <button class="ghost sm" id="bo1" onclick="setBO(1)">BO1</button>
+      <button class="ghost sm" id="bo2" onclick="setBO(2)">BO2</button>
+      <button class="ghost sm" id="bo3" onclick="setBO(3)">BO3</button>
+    </div>
+    <span class="k" id="boInfo"></span>
+    <div class="grow"></div>
+    <span class="k" id="liveMap"></span>
+  </div>
+  <div class="frow" style="margin-top:6px">
+    <span class="sub" style="margin:0">选手池 <b id="livePoolN">0</b> 人 · 屠夫池 <b id="liveHuntN">0</b> 个 · 全局已消耗 求生 <b id="liveBs">0</b> / 监管 <b id="liveBh">0</b></span>
+    <div class="grow"></div>
+    <button class="ghost sm" id="timerBtn" onclick="toggleTimer()">⏱ 倒计时：关</button>
+    <button class="ghost sm" onclick="switchTab('setup')">去设置</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="frow" style="margin-bottom:4px">
+    <h3 style="margin:0" id="stepTitle">BP 开始</h3>
+    <div class="grow"></div>
+    <span class="tag cyan" id="stepSec"></span>
+    <span class="tag gray" id="stepCount"></span>
+  </div>
+  <div class="bosteps" id="stepBar"></div>
+  <div class="livehint" id="liveHint"></div>
+  <div style="margin-top:12px">
+    <h3>点选记录（当前步骤）</h3>
+    <div class="chips" id="liveChips"></div>
+    <div id="liveEmpty" class="empty" style="display:none">当前步骤无需你记录</div>
+    <div id="doneBox" style="display:none;margin-top:12px">
+      <span class="sub" style="margin:0 8px 0 0">对手本局实际使用的屠夫（可留空）</span>
+      <select id="oppHunterFinal"></select>
+    </div>
+  </div>
+  <div class="frow" style="margin-top:14px">
+    <button class="ghost sm" onclick="liveUndo()">撤销上一步</button>
+    <button class="ghost sm" onclick="liveNext()">跳过本步</button>
+    <div class="grow"></div>
+    <button class="sm" onclick="liveFinish()">结束本局并保存</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="grid2">
+    <div>
+      <h3>我方阵容</h3>
+      <div class="slots" id="ourSlots"></div>
+      <h3 style="margin-top:14px">我方禁屠夫</h3>
+      <div class="slots" id="ourBanSlots"></div>
+    </div>
+    <div>
+      <h3>对手禁我方求生者</h3>
+      <div class="slots" id="hbSlots"></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>本系列已打局</h2>
+  <div id="seriesLog"></div>
+</div>
+
+</div><!-- /panelLive -->
+
+<footer>
+  机制数值来自第五人格官方 Wiki · BP 时序来自赛事规则第十一版 · 胜平率来自本站 894 半场统计<br>
+  「平」= 2 人逃出；「不崩」= 非四抓（平 + 求生者胜）
+</footer>
+</div>
+
+<script>
+/* ================= 角色元数据 ================= */
+const META = {
+  '幻灯师':{role:['辅助','牵制'],dec:null,note:'静物投影可远程压机'},
+  '古董商':{role:['牵制','OB'],dec:null,note:'止戈击退；旧伤使修机/开门变慢'},
+  '斗牛士':{role:['牵制','OB'],dec:0,note:'横扫替被追队友挡伤'},
+  '飞行家':{role:['牵制','救援'],dec:0.02,note:'12.7m 内有队友时 debuff 反转'},
+  '作曲家':{role:['修机'],dec:0,note:'音律校准叠层；连败 3 次爆点'},
+  '祭司':{role:['辅助'],dec:-0.10,note:'门之钥通道；校准难度 +30%'},
+  '前锋':{role:['OB'],dec:-0.25,note:'撞飞监管；机械盲'},
+  '幸运儿':{role:['容错'],dec:0,note:'开箱许愿 50%/100%，万能补位'},
+  '佣兵':{role:['救援'],dec:-0.25,note:'恐惧值延迟 8 秒生效'},
+  '机械师':{role:['修机'],dec:0.10,note:'胆怯：队友受伤时 −30%×2'},
+  '木偶师':{role:['牵制'],dec:null,note:'路易抵 1.5 倍普攻'},
+  '气象学家':{role:['辅助'],dec:0,note:'透视 36m 伤员；独存可见地窖'},
+  '野人':{role:['OB'],dec:-0.25,note:'伙伴格挡且监管打伙伴不擦刀'},
+  '咒术师':{role:['OB'],dec:0,note:'3 层引爆麻痹 4 秒；越用攒得越慢'},
+  '逃脱大师':{role:['救援'],dec:-0.15,note:'把队友转移到 47m 外椅子'},
+  '大副':{role:['救援'],dec:-0.20,note:'被救者伪装成大副 10 秒'},
+  '守墓人':{role:['救援'],dec:-0.15,note:'出地未受伤救援 +50%'},
+  '医生':{role:['治疗','辅助'],dec:null,note:'治疗与自愈'},
+  '空军':{role:['牵制','救援'],dec:null,note:'信号枪救场'},
+  '弓箭手':{role:['牵制','OB'],dec:null,note:'远程干扰'},
+  '囚徒':{role:['修机'],dec:null,note:'导电传输破译进度'},
+  '律师':{role:['修机','辅助'],dec:null,note:'视野与信息'},
+  '魔术师':{role:['牵制'],dec:null,note:'分身迷惑'},
+  '先知':{role:['辅助','牵制'],dec:null,note:'役鸟护佑/透视'},
+  '心理学家':{role:['辅助'],dec:null,note:'情绪调节、远程续航'},
+  '拉拉队员':{role:['辅助'],dec:null,note:'道具续航'},
+  '教授':{role:['牵制'],dec:null,note:'鳞片减伤共情'},
+  '法罗女士':{role:['修机'],dec:null,note:'密码机相关机制'},
+  '火灾调查员':{role:['牵制'],dec:null,note:'气囊/高墙点布控'},
+  '入殓师':{role:['辅助'],dec:null,note:'化妆延迟淘汰'},
+  '杂技演员':{role:['牵制'],dec:null,note:'三心二意'},
+  '园丁':{role:['辅助','OB'],dec:null,note:'拆椅'},
+  '小女孩':{role:['辅助'],dec:null,note:'附身'},
+  '玩具商':{role:['辅助'],dec:null,note:'道具空投'},
+  '调酒师':{role:['辅助'],dec:null,note:'酒类增益'},
+  '勘探员':{role:['OB'],dec:null,note:'磁铁'},
+  '击球手':{role:['OB'],dec:null,note:'板球'},
+  '野猪':{role:['救援'],dec:null,note:''},
+  '冒险家':{role:['修机'],dec:null,note:'密码书页'},
+  '小说家':{role:['辅助'],dec:null,note:'创作笔记'}
+};
+const PROF = [[5,'绝活'],[4,'主玩'],[3,'熟练'],[2,'会玩'],[1,'勉强']];
+const MAP_NOTE = {
+  '月亮河公园':'机位极可预判','永眠镇':'可预判（S 板必刷）','军工厂':'可预判（中场沙包联动）',
+  '圣心医院':'可预判（外侧各 2 台）','不归林':'可预判（各区 1 台）','唐人街':'需局内信息',
+  '湖景村':'需局内信息（5 种刷法）','红教堂':'强随机','里奥的回忆':'强随机 + 视野差'
+};
+const BO_RULES = {
+  BO1:{hunterBans:0, mapBan:'客场禁 2 图', mapPick:'主场选图', side:'客场选边'},
+  BO2:{hunterBans:1, mapBan:'主场禁 1 图', mapPick:'客场选图', side:'主场选边'},
+  BO3:{hunterBans:2, mapBan:'客场禁 1 图', mapPick:'主场选图', side:'客场选边'}
+};
+
+/* ================= 状态 ================= */
+const state = { pool:new Set(), hunters:new Set(), banS:new Set(), banH:new Set(),
+                banM:new Set(), prof:new Map(), series:[] };
+const live = { bo:1, stepIdx:0, picks:[], hBans:[], oBansH:[], journal:[], map:'', timerOn:false };
+let RAW = [];
+let lastTopCombo = null;
+
+const fmtPct = x => (x*100).toFixed(1)+'%';
+const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
+
+/* ================= 数据 ================= */
+function tourRows(){
+  const t = document.getElementById('tour').value;
+  let rows = RAW;
+  if(t==='autumn') rows = rows.filter(r=>r[2]==='2026IVL秋季赛常规赛');
+  if(t==='summer') rows = rows.filter(r=>r[2]!=='2026IVL秋季赛常规赛');
+  return rows;
+}
+function scoped(){
+  const m = document.getElementById('map').value;
+  const rows = tourRows();
+  return m ? rows.filter(r=>r[0]===m) : rows;
+}
+function shrunk(a,n,p0,k){ return (a + k*p0)/(n + k); }
+
+function hunterStats(rows){
+  const p0 = rows.length ? rows.filter(r=>r[3]!=='屠').length/rows.length : 0.5;
+  const m = new Map();
+  for(const r of rows){
+    const h=r[1];
+    if(!m.has(h)) m.set(h,{name:h,n:0,draw:0,four:0,win:0});
+    const o=m.get(h); o.n++;
+    if(r[3]==='平') o.draw++;
+    if(r[3]==='人') o.win++;
+    if(r[3]==='屠') o.four++;
+  }
+  for(const o of m.values()){
+    o.notLost=(o.draw+o.win)/o.n;
+    o.drawRate=o.draw/o.n;
+    o.shrunkNotLost=shrunk(o.draw+o.win,o.n,p0,12);
+  }
+  return {list:[...m.values()], p0};
+}
+function charStats(rows){
+  const p0 = rows.length ? rows.filter(r=>r[3]!=='屠').length/rows.length : 0.5;
+  const m = new Map();
+  for(const r of rows){
+    for(const c of r[4]||[]){
+      if(!m.has(c)) m.set(c,{name:c,n:0,draw:0,win:0});
+      const o=m.get(c); o.n++;
+      if(r[3]==='平') o.draw++;
+      if(r[3]==='人') o.win++;
+    }
+  }
+  for(const o of m.values()){
+    o.notLost=(o.draw+o.win)/o.n;
+    o.shrunk=shrunk(o.draw+o.win,o.n,p0,25);
+  }
+  return {list:[...m.values()], p0, map:m};
+}
+function scoreCombo(combo, cs){
+  const base = combo.reduce((s,c)=> s + (cs.map.get(c)?.shrunk ?? cs.p0), 0)/combo.length;
+  const roles = combo.flatMap(c=>META[c]?.role||[]);
+  let adj=0, warns=[];
+  if(!roles.includes('救援')){ adj-=0.06; warns.push('无救援位'); }
+  if(!roles.includes('修机')){ adj-=0.05; warns.push('无修机位'); }
+  if(!(roles.includes('牵制')||roles.includes('OB'))){ adj-=0.05; warns.push('无牵制/OB'); }
+  const decSum = combo.reduce((s,c)=> s + (META[c]?.dec ?? 0), 0);
+  if(decSum <= -0.55){ adj-=0.05; warns.push('破译惩罚过重'); }
+  return {score:base+adj, base, warns, decSum};
+}
+const pctPill = v => `<span class="pill ${v>=0.55?'hi':(v<0.4?'lo':'')}">${fmtPct(v)}</span>`;
+const bar = (v,cls)=>`<div class="bar"><i class="${cls}" style="width:${clamp(v,0,1)*100}%"></i></div>`;
+
+/* ================= 预设 ================= */
+const PKEY='coachBP.preset.v1';
+function lsGet(){ try{ return localStorage.getItem(PKEY);}catch(e){ return null; } }
+function lsSet(v){ try{ localStorage.setItem(PKEY,v);}catch(e){} }
+function lsDel(){ try{ localStorage.removeItem(PKEY);}catch(e){} }
+function savePreset(){
+  const payload = {
+    pool:[...state.pool], hunters:[...state.hunters], prof:Object.fromEntries(state.prof),
+    banS:[...state.banS], banH:[...state.banH], banM:[...state.banM],
+    series:state.series,
+    bo:live.bo, map:live.map, timerOn:live.timerOn,
+    oppMap:{mode:document.getElementById('oppMapMode').value, hunter:document.getElementById('oppMapHunter').value}
+  };
+  lsSet(JSON.stringify(payload));
+}
+function loadPreset(){
+  const raw = lsGet(); if(!raw) return false;
+  let p; try{ p=JSON.parse(raw); }catch(e){ return false; }
+  if(!p) return false;
+  const survAll=new Set(RAW.flatMap(r=>r[4]||[]));
+  const huntAll=new Set(RAW.map(r=>r[1]));
+  (p.pool||[]).forEach(c=>{ if(survAll.has(c)) state.pool.add(c); });
+  (p.hunters||[]).forEach(h=>{ if(huntAll.has(h)) state.hunters.add(h); });
+  (p.banS||[]).forEach(c=>{ if(survAll.has(c)) state.banS.add(c); });
+  (p.banH||[]).forEach(h=>{ if(huntAll.has(h)) state.banH.add(h); });
+  (p.banM||[]).forEach(m=>state.banM.add(m));
+  Object.entries(p.prof||{}).forEach(([h,v])=>{ if(huntAll.has(h)) state.prof.set(h,Number(v)||3); });
+  if(Array.isArray(p.series)) state.series = p.series;
+  if(p.bo) live.bo = Math.min(3, Math.max(1, Number(p.bo)));
+  if(p.map) live.map = p.map;
+  live.timerOn = !!p.timerOn;
+  if(p.oppMap){
+    const mm=document.getElementById('oppMapMode'), mh=document.getElementById('oppMapHunter');
+    mm.value = p.oppMap.mode==='hunter'?'hunter':'unknown';
+    if(mh.children.length) mh.value = p.oppMap.hunter||'';
+  }
+  document.getElementById('poolcnt').textContent = state.pool.size;
+  document.getElementById('hcnt').textContent = state.hunters.size;
+  paintPoolChips(); paintMapChips();
+  return true;
+}
+function clearPreset(ask){
+  if(ask && !confirm('清除已保存的预设？当前选择不会被清空，但下次打开不会恢复。')) return;
+  lsDel(); alert('预设已清除');
+}
+function paintPoolChips(){
+  Array.from(document.getElementById('pool').children).forEach(ch=>{
+    ch.classList.toggle('on', state.pool.has(ch.dataset.v));
+    ch.classList.toggle('banned', state.banS.has(ch.dataset.v));
+  });
+  Array.from(document.getElementById('hunters').children).forEach(ch=>{
+    ch.classList.toggle('on', state.hunters.has(ch.dataset.v));
+    ch.classList.toggle('banned', state.banH.has(ch.dataset.v));
+  });
+}
+function paintBanChips(){
+  Array.from(document.getElementById('banS').children).forEach(ch=>ch.classList.toggle('on', state.banS.has(ch.dataset.v)));
+  Array.from(document.getElementById('banH').children).forEach(ch=>ch.classList.toggle('on', state.banH.has(ch.dataset.v)));
+}
+function paintMapChips(){
+  Array.from(document.getElementById('mapChips').children).forEach(ch=>ch.classList.toggle('on', state.banM.has(ch.dataset.v)));
+}
+function resetAll(){
+  if(!confirm('重置本场？将清空角色池、屠夫池、熟练度、已消耗、地图标记、对局记录与当前 BP。\n（主客身份不受影响；已保存的预设也会被同步清空）')) return;
+  state.pool.clear(); state.hunters.clear(); state.prof.clear();
+  state.banS.clear(); state.banH.clear(); state.banM.clear(); state.series.length=0;
+  live.bo=1; live.stepIdx=0; live.picks=[]; live.hBans=[]; live.oBansH=[]; live.journal=[];
+  stopTimer();
+  document.getElementById('poolcnt').textContent='0';
+  document.getElementById('hcnt').textContent='0';
+  const mm=document.getElementById('oppMapMode'), mh=document.getElementById('oppMapHunter');
+  if(mm) mm.value='unknown'; if(mh) mh.value='';
+  paintPoolChips(); paintBanChips(); paintMapChips();
+  renderAll(); alert('已重置');
+}
+
+/* ================= 标签页 ================= */
+function switchTab(which){
+  document.getElementById('tabSetup').classList.toggle('on', which==='setup');
+  document.getElementById('tabLive').classList.toggle('on', which==='live');
+  document.getElementById('panelSetup').classList.toggle('on', which==='setup');
+  document.getElementById('panelLive').classList.toggle('on', which==='live');
+  if(which==='live') renderLive(); else stopTimer();
+}
+
+/* ================= 模块一：渲染 ================= */
+function renderProfList(){
+  const box=document.getElementById('profList');
+  const list=[...state.hunters].filter(h=>!state.banH.has(h));
+  if(!list.length){ box.innerHTML=''; return; }
+  box.innerHTML='<div class="sub" style="margin:0 0 8px">熟练度（参与 ban 优先级）</div>'
+    + list.map(h=>{
+        const p=state.prof.get(h)||3;
+        return '<div class="frow" style="margin-bottom:7px">'
+          + '<span style="min-width:90px;font-size:12.5px;color:#c8ccd8">'+h+'</span>'
+          + '<select onchange="setProf(\''+h+'\',this.value)">'
+          + PROF.map(([v,t])=>'<option value="'+v+'"'+(v===p?' selected':'')+'>'+t+'</option>').join('')
+          + '</select></div>';
+      }).join('');
+}
+function setProf(h,v){ state.prof.set(h,Number(v)); renderAll(); }
+const profOf = h => state.prof.get(h)||3;
+
+function mapScores(oppHunter){
+  const rows=tourRows();
+  const availPool=[...state.pool].filter(c=>!state.banS.has(c));
+  const byMap=new Map(); let gFour=0,gN=0;
+  for(const r of rows){
+    const M=r[0];
+    if(r[3]==='屠') gFour++; gN++;
+    if(!byMap.has(M)) byMap.set(M,{map:M,n:0,notLost:0,chars:new Map(),hN:0,hFour:0});
+    const o=byMap.get(M); o.n++;
+    if(r[3]!=='屠') o.notLost++;
+    if(oppHunter && r[1]===oppHunter){ o.hN++; if(r[3]==='屠') o.hFour++; }
+    for(const c of (r[4]||[])){
+      if(!o.chars.has(c)) o.chars.set(c,{n:0,nl:0});
+      const cc=o.chars.get(c); cc.n++;
+      if(r[3]!=='屠') cc.nl++;
+    }
+  }
+  const gBase = gN? gFour/gN : 0.3;
+  const res=[];
+  for(const o of byMap.values()){
+    const base=o.notLost/o.n;
+    const per=availPool.map(c=>{
+      const cc=o.chars.get(c);
+      if(!cc) return {c,s:null,n:0};
+      return {c,s:(cc.nl+10*base)/(cc.n+10),n:cc.n};
+    }).filter(x=>x.s!==null).sort((a,b)=>b.s-a.s);
+    const top4=per.slice(0,4);
+    const est=top4.length? top4.reduce((s,x)=>s+x.s,0)/top4.length : null;
+    const support=top4.reduce((s,x)=>s+x.n,0);
+    const threat = oppHunter ? (o.hN ? (o.hFour+8*gBase)/(o.hN+8) : null) : null;
+    let combined=est;
+    if(est!==null && threat!==null) combined=clamp(est-0.5*(threat-gBase),0,1);
+    res.push({map:o.map,n:o.n,base,est,support,threat,hN:o.hN,combined});
+  }
+  return res.sort((a,b)=>(b.combined ?? -1)-(a.combined ?? -1));
+}
+function renderMapOut(){
+  const box=document.getElementById('mapOut');
+  const mode=document.getElementById('oppMapMode').value;
+  const oppH = mode==='hunter'? document.getElementById('oppMapHunter').value : '';
+  document.getElementById('oppMapHunter').style.display = mode==='hunter'?'':'none';
+
+  const all=mapScores(oppH);
+  const avail=all.filter(x=>!state.banM.has(x.map));
+  if(!avail.length){ box.innerHTML='<div class="empty">地图已全部被标记，或角色池为空。</div>'; return; }
+
+  const metric = x => oppH? x.combined : x.est;
+  const withEst=avail.filter(x=>metric(x)!==null);
+  const identity=document.getElementById('identity').value;
+  const conf=withEst.filter(x=>x.support>=20);
+  const pickPool = conf.length>=2? conf : withEst;
+  const best=pickPool[0], worst=pickPool[pickPool.length-1];
+  const skipped=withEst.filter(x=>!pickPool.includes(x));
+  const val = x => fmtPct(metric(x));
+
+  let advice='';
+  if(!withEst.length){
+    advice='<div class="warn">我方角色池里没有任何角色在剩余地图上出过场，无法估计。</div>';
+  } else {
+    const b2=pickPool[1]||best, w2=pickPool[pickPool.length-2]||worst;
+    advice = identity==='home'
+      ? `<div class="warn">BO1（我方选图）→ 选 <b>${best.map}</b>（${val(best)}，支撑 ${best.support}）<br>
+         BO2（我方禁 1 图）→ 禁 <b>${worst.map}</b>（${val(worst)}）<br>
+         BO3（我方选图）→ 选 <b>${b2.map}</b>（${val(b2)}）</div>`
+      : `<div class="warn">BO1（我方禁 2 图）→ 禁 <b>${worst.map}</b>、<b>${w2.map}</b>（${val(worst)} / ${val(w2)}）<br>
+         BO2（我方选图）→ 选 <b>${best.map}</b>（${val(best)}）<br>
+         BO3（我方禁 1 图）→ 禁 <b>${worst.map}</b></div>`;
+    if(skipped.length) advice += `<div class="note" style="margin-top:8px">已跳过样本不足：${skipped.map(x=>x.map+'（'+x.support+'）').join('、')}</div>`;
+  }
+
+  const tagFor = x => best&&x.map===best.map? ' <span class="tag green">建议选</span>'
+    : (worst&&x.map===worst.map? ' <span class="tag red">建议禁</span>'
+    : (x.support<20? ' <span class="tag gray">小样本</span>' : ''));
+
+  box.innerHTML = `<table>
+    <tr><th>地图</th><th>样本</th><th>全场不崩率</th><th>我方池估计</th><th>支撑</th>${oppH?'<th>对手威胁</th><th>综合</th>':''}<th>机位</th></tr>
+    ${avail.map(x=>`<tr>
+      <td class="name">${x.map}${tagFor(x)}</td>
+      <td>${x.n}</td><td>${fmtPct(x.base)}</td>
+      <td>${x.est===null?'<span class="tag gray">无样本</span>':pctPill(x.est)}</td>
+      <td style="font-size:12px">${x.support<20?`<span class="tag amber">${x.support}·偏少</span>`:`${x.support}`}</td>
+      ${oppH?`<td>${x.threat===null?'—':`<span class="tag ${x.threat>0.4?'red':'gray'}">四抓 ${fmtPct(x.threat)}</span>`}</td>
+             <td>${metric(x)===null?'—':pctPill(metric(x))}</td>`:''}
+      <td style="font-size:11.5px;color:#8d94a8">${MAP_NOTE[x.map]||'—'}</td>
+    </tr>`).join('')}
+  </table>
+  <div class="sub">${oppH?`「综合」= 我方估计 − 0.5×（${oppH} 在此图的平滑四抓率 − 全局四抓率）`:'「未知」模式未做对手加权——对手在某图特别强时此排序会偏乐观。'}</div>
+  ${advice}`;
+}
+
+function renderSetup(){
+  renderProfList();
+  renderMapOut();
+  document.getElementById('livePoolN').textContent = state.pool.size;
+  document.getElementById('liveHuntN').textContent = state.hunters.size;
+  document.getElementById('liveBs').textContent = state.banS.size;
+  document.getElementById('liveBh').textContent = state.banH.size;
+}
+
+/* ================= 模块二：实时 BP ================= */
+function seqFor(bo){
+  const k = bo===1?0:bo===2?1:2;
+  const s=[];
+  s.push({key:'hbans',n:2,label:'屠夫禁 2 名求生者',sec:40});
+  if(k>0) s.push({key:'ourban',n:k,label:`我方禁 ${k} 名监管者`,sec:40});
+  s.push({key:'pick',n:2,label:'我方选 2 名求生者',sec:60});
+  s.push({key:'hbans',n:1,label:'屠夫再禁 1 名求生者',sec:40});
+  s.push({key:'pick',n:1,label:'我方选 1 名求生者',sec:30});
+  s.push({key:'hbans',n:1,label:'屠夫再禁 1 名求生者',sec:20});
+  s.push({key:'pick',n:1,label:'我方选 1 名求生者',sec:20});
+  s.push({key:'done',n:0,label:'BP 完成',sec:0});
+  return s;
+}
+function filledFor(idx, seq){
+  let c=0;
+  for(const a of live.journal) if(a.stepIdx===idx) c++;
+  return c;
+}
+function currentFilled(){ return filledFor(live.stepIdx, seqFor(live.bo)); }
+
+function setBO(n){
+  if(n!==live.bo && (live.picks.length||live.hBans.length||live.oBansH.length)){
+    if(!confirm('切换 BO 会重置当前这局的 BP 记录，继续？')) return;
+  }
+  live.bo=n; live.stepIdx=0; live.picks=[]; live.hBans=[]; live.oBansH=[]; live.journal=[];
+  renderLive(); savePreset();
+}
+function allSurvivors(){ return [...new Set(RAW.flatMap(r=>r[4]||[]))].sort(); }
+function allHunters(){ return [...new Set(RAW.map(r=>r[1]))].sort(); }
+function availableSurvivors(){
+  const used=new Set([...live.hBans, ...live.picks]);
+  return [...state.pool].filter(c=> !used.has(c) && !state.banS.has(c));
+}
+function availableHunters(){
+  const banned=new Set(live.oBansH);
+  return [...state.hunters].filter(h=> !banned.has(h) && !state.banH.has(h));
+}
+
+/* ===== 步骤倒计时（可开关） ===== */
+let timerId = null, remainSec = 0;
+function stopTimer(){ if(timerId){ clearInterval(timerId); timerId = null; } }
+function toggleTimer(){
+  live.timerOn = !live.timerOn;
+  savePreset();
+  renderLive();
+}
+function paintTimerBtn(){
+  const b = document.getElementById('timerBtn');
+  if(b) b.textContent = live.timerOn ? '⏱ 倒计时：开' : '⏱ 倒计时：关';
+}
+function startTimer(){
+  stopTimer();
+  const seq = seqFor(live.bo);
+  const st = seq[Math.min(live.stepIdx, seq.length-1)];
+  remainSec = st.sec || 0;
+  updateSecLabel(st);
+  if(!live.timerOn || !st.sec) return;
+  timerId = setInterval(()=>{
+    remainSec--;
+    updateSecLabel(st);
+    if(remainSec <= 0) stopTimer();
+  }, 1000);
+}
+function updateSecLabel(st){
+  const el = document.getElementById('stepSec');
+  if(!el) return;
+  if(!st.sec){ el.textContent = '—'; el.className = 'tag gray'; return; }
+  if(!live.timerOn){ el.textContent = st.sec + ' 秒'; el.className = 'tag cyan'; return; }
+  el.textContent = remainSec > 0 ? ('剩余 ' + remainSec + 's') : '超时';
+  el.className = 'tag ' + (remainSec > 5 ? 'cyan' : 'red');
+}
+
+function renderLive(){
+  const seq=seqFor(live.bo);
+  const st=seq[Math.min(live.stepIdx, seq.length-1)];
+
+  document.getElementById('bo1').classList.toggle('ghost', live.bo!==1);
+  document.getElementById('bo2').classList.toggle('ghost', live.bo!==2);
+  document.getElementById('bo3').classList.toggle('ghost', live.bo!==3);
+  document.getElementById('boInfo').textContent = `屠夫可 ban 求生者 4 次 · 我方禁屠夫 ${BO_RULES['BO'+live.bo].hunterBans} 个`;
+  const msel=document.getElementById('map').value;
+  document.getElementById('liveMap').textContent = msel? `地图：${msel}` : (live.map? `地图：${live.map}`:'地图：未选');
+
+  document.getElementById('livePoolN').textContent = state.pool.size;
+  document.getElementById('liveHuntN').textContent = state.hunters.size;
+  document.getElementById('liveBs').textContent = state.banS.size;
+  document.getElementById('liveBh').textContent = state.banH.size;
+
+  /* 步骤条 */
+  document.getElementById('stepBar').innerHTML = seq.map((s,i)=>{
+    const done = i<live.stepIdx;
+    const now = i===live.stepIdx;
+    const cnt = done? `${s.key==='done'?'':''}` : '';
+    return `<div class="bostep ${done?'done':''} ${now?'now':''}">${i+1}. ${s.label.replace('我方','').replace('屠夫','守')}</div>`;
+  }).join('');
+
+  /* 当前步骤 */
+  const filled=currentFilled();
+  document.getElementById('stepTitle').textContent = `${live.stepIdx+1}. ${st.label}`;
+  document.getElementById('stepCount').textContent = st.n? `已记录 ${filled}/${st.n}` : '';
+
+  /* 提示与建议 */
+  document.getElementById('liveHint').innerHTML = liveHint(st, seq);
+
+  /* 点选区：一律用全名单，池内高亮、池外淡显虚线 */
+  const chipsEl=document.getElementById('liveChips');
+  const emptyEl=document.getElementById('liveEmpty');
+  const doneBox=document.getElementById('doneBox');
+  chipsEl.innerHTML='';
+  doneBox.style.display = st.key==='done' ? '' : 'none';
+
+  let list=[], baseCls='', inPool=()=>true;
+  if(st.key==='hbans' || st.key==='pick'){
+    /* 对手禁人 / 我方选人：都给全名单，池外淡显 */
+    const used=new Set([...live.hBans, ...live.picks, ...state.banS]);
+    list=allSurvivors().filter(c=>!used.has(c));
+    baseCls='role-s'; inPool=c=>state.pool.has(c);
+  } else if(st.key==='ourban'){
+    const used=new Set([...live.oBansH, ...state.banH]);
+    list=allHunters().filter(h=>!used.has(h));
+    baseCls='role-h'; inPool=h=>state.hunters.has(h);
+  }
+
+  if(st.n===0){
+    chipsEl.style.display='none'; emptyEl.style.display=''; emptyEl.textContent='当前步骤无需你记录';
+  } else {
+    emptyEl.style.display='none'; chipsEl.style.display='';
+    list.forEach(name=>{
+      const d=document.createElement('div');
+      d.className='chip '+baseCls+' sm' + (inPool(name)?'':' off-pool');
+      d.textContent=name;
+      const meta=META[name];
+      if(meta) d.title=(meta.role||[]).join('/')+(meta.note?(' · '+meta.note):'');
+      d.onclick=()=>liveRecord(name);
+      chipsEl.appendChild(d);
+    });
+  }
+
+  /* 槽位 */
+  const pickSlots=[0,1,2,3].map(i=>`<div class="slot ${live.picks[i]?'filled':''}">${live.picks[i]||'—'}</div>`).join('');
+  document.getElementById('ourSlots').innerHTML=pickSlots;
+  const k=BO_RULES['BO'+live.bo].hunterBans;
+  document.getElementById('ourBanSlots').innerHTML = k
+    ? [0,1].slice(0,k).map(i=>`<div class="slot ab ${live.oBansH[i]?'filled':''}">${live.oBansH[i]||'—'}</div>`).join('')
+    : '<div class="slot ab">本局不可 ban</div>';
+  document.getElementById('hbSlots').innerHTML = [0,1,2,3].map(i=>`<div class="slot hb ${live.hBans[i]?'filled':''}">${live.hBans[i]||'—'}</div>`).join('');
+
+  renderSeriesLog();
+  paintTimerBtn();
+  startTimer();
+}
+
+function liveHint(st, seq){
+  const cs=charStats(scoped());
+  const hs=hunterStats(scoped());
+  const p0=cs.p0;
+  if(st.key==='hbans'){
+    const avail=availableSurvivors();
+    const ranked=avail.map(c=>({c,s:cs.map.get(c)?.shrunk ?? p0})).sort((a,b)=>b.s-a.s).slice(0,3);
+    return `<b>对手正在禁我方角色</b>——按实际结果点选记录即可。<br>
+      下方为<b>全名单</b>：亮色=我方池内，虚线=池外（对手也可能禁池外角色）。<br>
+      对手最可能先动的三名：<b>${ranked.map(x=>x.c).join('、')||'—'}</b>`;
+  }
+  if(st.key==='ourban'){
+    const oppPool=[...state.hunters].filter(h=>!state.banH.has(h)&&!live.oBansH.includes(h))
+      .map(n=>hs.list.find(x=>x.name===n)).filter(Boolean);
+    const urgencyOf=h=>(profOf(h.name)/5)*(1-h.shrunkNotLost);
+    const top=[...oppPool].sort((a,b)=>urgencyOf(b)-urgencyOf(a)).slice(0,BO_RULES['BO'+live.bo].hunterBans);
+    return `<b>该禁谁</b>：按"熟练度 × 数据威胁"排序<br>
+      ${top.map((h,i)=>`${i+1}. <b>${h.name}</b>（熟练度 ${profOf(h.name)}/5，不崩 ${fmtPct(h.shrunkNotLost)}，n=${h.n}）`).join('<br>')}
+      <span class="note">统计只排普遍强度，熟练度是你设定的——他真会玩的那个优先。</span>`;
+  }
+  if(st.key==='pick'){
+    const avail=availableSurvivors();
+    const need=4-live.picks.length;
+    const existing=live.picks.length? `已选：<b>${live.picks.join(' · ')}</b><br>`:'';
+    if(avail.length<need){
+      return `${existing}<b style="color:#c08b3e">池内只剩 ${avail.length} 人，还需 ${need} 人</b><br>
+        下方是全名单，可直接点池外角色补选（虚线）。<br>
+        <span class="note">推荐只在池内计算，池内不足时不作推荐。</span>`;
+    }
+    const combos=[];
+    const rec=(start,cur)=>{
+      if(cur.length===need){ combos.push([...cur]); return; }
+      for(let i=start;i<avail.length;i++){ cur.push(avail[i]); rec(i+1,cur); cur.pop(); }
+    };
+    if(need>0 && need<=4) rec(0,[]);
+    const scored=combos.map(c=>({combo:c,...scoreCombo(c,cs)})).sort((a,b)=>b.score-a.score).slice(0,3);
+    lastTopCombo = scored[0]? scored[0].combo : null;
+    if(!scored.length) return existing+'没有可用组合。';
+    return `${existing}<b>本步推荐</b>（还需选 ${st.n} 人，合计差 ${need} 人）：<br>
+      ${scored.map((s,i)=>`${i+1}. <b>${s.combo.join(' · ')}</b> ${pctPill(s.score)} ${s.warns.length?`<span class="tag amber">${s.warns.join('；')}</span>`:'<span class="tag green">结构完整</span>'}`).join('<br>')}
+      <span class="note">推荐只取我方池内角色；名单里虚线的是池外，也可以直接点</span>`;
+  }
+  if(st.key==='done'){
+    return `<b>BP 完成</b>：我方 <b>${live.picks.join(' · ')}</b><br>
+      接下来是天赋（盲押）与选点。天赋建议：回光返照 + 化险为夷，小天赋带下椅加速。<br>
+      <span class="note">选点时注意：屠夫在你之后还能选点（规则第 13 步），所以至少两人落点要能互相支援。</span>`;
+  }
+  return '';
+}
+
+function liveRecord(name){
+  const seq=seqFor(live.bo);
+  const st=seq[live.stepIdx];
+  if(st.n===0) return;
+  if(currentFilled()>=st.n) return;
+  if(st.key==='hbans'){ if(live.hBans.includes(name)) return; live.hBans.push(name); }
+  else if(st.key==='ourban'){ if(live.oBansH.includes(name)) return; live.oBansH.push(name); }
+  else if(st.key==='pick'){ if(live.picks.includes(name)) return; live.picks.push(name); }
+  live.journal.push({stepIdx:live.stepIdx,key:st.key,name});
+  if(currentFilled()>=st.n && live.stepIdx<seq.length-1) live.stepIdx++;
+  savePreset(); renderLive();
+}
+function liveUndo(){
+  const a=live.journal.pop();
+  if(!a){ alert('没有可撤销的记录'); return; }
+  if(a.key==='hbans') live.hBans=live.hBans.filter(x=>x!==a.name);
+  else if(a.key==='ourban') live.oBansH=live.oBansH.filter(x=>x!==a.name);
+  else if(a.key==='pick') live.picks=live.picks.filter(x=>x!==a.name);
+  live.stepIdx=a.stepIdx;
+  savePreset(); renderLive();
+}
+function liveNext(){
+  const seq=seqFor(live.bo);
+  if(live.stepIdx>=seq.length-1) return;
+  live.stepIdx++;
+  savePreset(); renderLive();
+}
+function liveFinish(){
+  if(live.picks.length<4){ alert('还没选满 4 人，无法保存本局'); return; }
+  const mapNow = document.getElementById('map').value || live.map || '未记录';
+  const finishedBO = live.bo;
+  const oppFinal = document.getElementById('oppHunterFinal').value || '';
+  state.series.push({
+    bo:'BO'+finishedBO, map:mapNow,
+    picks:[...live.picks], hBans:[...live.hBans], oBansH:[...live.oBansH], oppHunter:oppFinal
+  });
+  live.picks.forEach(c=>state.banS.add(c));
+  live.oBansH.forEach(h=>state.banH.add(h));
+  if(oppFinal) state.banH.add(oppFinal);
+  live.picks=[]; live.hBans=[]; live.oBansH=[]; live.journal=[]; live.stepIdx=0;
+  const ofEl=document.getElementById('oppHunterFinal');
+  if(ofEl) ofEl.value='';
+
+  /* 自动推进到下一局 */
+  let nextMsg;
+  if(finishedBO < 3){
+    live.bo = finishedBO + 1;
+    nextMsg = `下一局：BO${live.bo}（我方禁 ${BO_RULES['BO'+live.bo].hunterBans} 名屠夫）`;
+  } else {
+    nextMsg = '已是 BO3，本系列打完';
+  }
+
+  paintPoolChips(); paintBanChips();
+  savePreset(); renderAll();
+  alert(`BO${finishedBO} 已保存：阵容 ${state.series[state.series.length-1].picks.join(' · ')}\n这 4 人与我方禁掉的屠夫已进入全局 BAN\n\n${nextMsg}`);
+}
+function renderSeriesLog(){
+  const box=document.getElementById('seriesLog');
+  if(!state.series.length){ box.innerHTML='<div class="empty">还没有已保存的局</div>'; return; }
+  box.innerHTML=`<table>
+    <tr><th>局</th><th>地图</th><th>我方阵容</th><th>我方禁屠夫</th><th>对手禁我方</th><th>对手屠夫</th></tr>
+    ${state.series.map(r=>`<tr>
+      <td class="name">${r.bo}</td>
+      <td>${r.map||'—'}</td>
+      <td class="name">${(r.picks||[]).join(' · ')}</td>
+      <td>${(r.oBansH||[]).join('、')||'—'}</td>
+      <td style="font-size:12px;color:#8d94a8">${(r.hBans||[]).join('、')||'—'}</td>
+      <td>${r.oppHunter||'—'}</td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+/* ================= 统一渲染 ================= */
+function renderAll(){
+  paintPoolChips();
+  paintBanChips();
+  paintMapChips();
+  renderSetup();
+  renderLive();
+  savePreset();
+}
+
+/* ================= 初始化 ================= */
+fetch('bp-data.json').then(r=>r.json()).then(data=>{
+  RAW=data;
+  const maps=[...new Set(RAW.map(r=>r[0]))].sort();
+  const msel=document.getElementById('map');
+  maps.forEach(m=>{ const o=document.createElement('option'); o.value=m; o.textContent=m; msel.appendChild(o); });
+
+  const chars=[...new Set(RAW.flatMap(r=>r[4]||[]))].sort();
+  const hunts=[...new Set(RAW.map(r=>r[1]))].sort();
+
+  const poolEl=document.getElementById('pool');
+  chars.forEach(c=>{
+    const d=document.createElement('div'); d.className='chip role-s'; d.textContent=c; d.dataset.v=c;
+    d.onclick=()=>{ state.pool.has(c)?state.pool.delete(c):state.pool.add(c);
+      document.getElementById('poolcnt').textContent=state.pool.size; renderAll(); };
+    poolEl.appendChild(d);
+  });
+  const hEl=document.getElementById('hunters');
+  hunts.forEach(h=>{
+    const d=document.createElement('div'); d.className='chip role-h'; d.textContent=h; d.dataset.v=h;
+    d.onclick=()=>{ state.hunters.has(h)?state.hunters.delete(h):state.hunters.add(h);
+      document.getElementById('hcnt').textContent=state.hunters.size; renderAll(); };
+    hEl.appendChild(d);
+  });
+
+  const bsEl=document.getElementById('banS');
+  chars.forEach(c=>{
+    const d=document.createElement('div'); d.className='chip role-s sm'; d.textContent=c; d.dataset.v=c;
+    d.onclick=()=>{ state.banS.has(c)?state.banS.delete(c):state.banS.add(c); paintBanChips(); paintPoolChips(); renderAll(); };
+    bsEl.appendChild(d);
+  });
+  const bhEl=document.getElementById('banH');
+  hunts.forEach(h=>{
+    const d=document.createElement('div'); d.className='chip role-h sm'; d.textContent=h; d.dataset.v=h;
+    d.onclick=()=>{ state.banH.has(h)?state.banH.delete(h):state.banH.add(h); paintBanChips(); paintPoolChips(); renderAll(); };
+    bhEl.appendChild(d);
+  });
+
+  const mcEl=document.getElementById('mapChips');
+  maps.forEach(m=>{
+    const d=document.createElement('div'); d.className='chip sm'; d.textContent=m; d.dataset.v=m;
+    d.onclick=()=>{ state.banM.has(m)?state.banM.delete(m):state.banM.add(m); paintMapChips(); renderAll(); };
+    mcEl.appendChild(d);
+  });
+
+  const omh=document.getElementById('oppMapHunter');
+  hunts.forEach(h=>{ const o=document.createElement('option'); o.value=h; o.textContent=h; omh.appendChild(o); });
+  const ofEl=document.getElementById('oppHunterFinal');
+  if(ofEl){
+    const blank=document.createElement('option'); blank.value=''; blank.textContent='— 留空 —'; ofEl.appendChild(blank);
+    hunts.forEach(h=>{ const o=document.createElement('option'); o.value=h; o.textContent=h; ofEl.appendChild(o); });
+  }
+  document.getElementById('oppMapMode').onchange=renderAll;
+  omh.onchange=renderAll;
+  ['identity','tour','map'].forEach(id=>document.getElementById(id).onchange=()=>{
+    if(id==='map') live.map=document.getElementById('map').value;
+    renderAll();
+  });
+
+  if(loadPreset()) console.log('[coach-bp] 已恢复上次预设');
+  renderAll();
+  switchTab('setup');
+}).catch(e=>{
+  document.getElementById('panelSetup').innerHTML =
+    `<div class="card"><div class="empty">数据加载失败：${e.message}<br>请确认 bp-data.json 与本页同目录。</div></div>`;
+});
+</script>
+</body></html>

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>时间与破译 · 第五人格 IVL</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0f1117;color:#e6e8ee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:28px 24px 72px}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:26px;border-bottom:1px solid #1e2230;padding-bottom:14px}
+.nav a{color:#8d94a8;text-decoration:none;font-size:13.5px;padding:7px 14px;border-radius:8px;border:1px solid transparent}
+.nav a:hover{background:#151823;color:#c8ccd8}
+.nav a.on{background:#151823;color:#e6e8ee;border-color:#232838}
+h1{font-size:24px;margin:6px 0 18px}
+h2{font-size:17px;margin:30px 0 12px;color:#dfe3ee;border-left:3px solid #3d6bff;padding-left:10px}
+h3{font-size:15px;margin:22px 0 10px;color:#c8ccd8}
+p,li{font-size:14.5px;line-height:1.85;color:#b9bfd0}
+strong{color:#e6e8ee}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0 20px}
+th{text-align:left;color:#7d8395;font-size:11.5px;font-weight:600;padding:8px;border-bottom:1px solid #2a2f3d}
+td{padding:8px;border-bottom:1px solid #1c2130;font-variant-numeric:tabular-nums}
+tr:hover td{background:#161a24}
+blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid #2f3547;background:#141721;color:#aab0c0;font-size:14px}
+code{background:#1a1f2b;padding:2px 6px;border-radius:4px;font-size:13px;color:#9fc0ff}
+pre{background:#141721;border:1px solid #1f2431;border-radius:10px;padding:14px 16px;overflow:auto}
+pre code{background:none;padding:0}
+hr{border:0;border-top:1px solid #1e2230;margin:28px 0}
+ul,ol{padding-left:22px}
+footer{color:#4f5668;font-size:11.5px;margin-top:40px;text-align:center}
+</style></head><body><div class="wrap">
+<nav class="nav">
+  <a href="index.html" class="">推荐器</a>
+  <a href="report-quickdown.html" class="">秒倒特征</a>
+  <a href="report-causal.html" class="">因果分析</a>
+  <a href="report-tempo.html" class="">时间与破译</a>
+  <a href="coach-bp.html" class="">教练保平BP</a>
+  <a href="report-source.html" class="">数据来源</a>
+</nav>
+<h1>时间与破译</h1>
+
+<p>数据：2026 IVL 894 个半场中，893 场有完整用时与四人破译数据。</p>
+<h2>1. 时间与破译总量的关系</h2>
+<table>
+<thead>
+<tr>
+<th>淘汰人数</th>
+<th>场次</th>
+<th>破译总量中位</th>
+<th>用时中位</th>
+<th>破译/秒</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>107</td>
+<td>530</td>
+<td>298s</td>
+<td><strong>1.80</strong></td>
+</tr>
+<tr>
+<td>2（平）</td>
+<td>423</td>
+<td>564</td>
+<td>356s</td>
+<td>1.65</td>
+</tr>
+<tr>
+<td>3</td>
+<td>187</td>
+<td>572</td>
+<td>412s</td>
+<td>1.41</td>
+</tr>
+<tr>
+<td>4</td>
+<td>171</td>
+<td>541</td>
+<td>425s</td>
+<td><strong>1.27</strong></td>
+</tr>
+</tbody>
+</table>
+<p>相关系数 corr(用时, 破译总量) = <strong>0.217</strong>，很弱。</p>
+<p>三个事实：</p>
+<ol>
+<li><strong>破译总量几乎不随时间增长</strong>（530 → 572 → 541，甚至回落）。</li>
+<li><strong>时间越长，破译效率越低</strong>（1.80 → 1.27，掉 30%）。</li>
+<li>四抓局的破译总量（541）比平局（564）还低，但用时多了 69 秒。</li>
+</ol>
+<p>结论：<strong>「拖时间」不会换来更多密码机。</strong> 拖出来的时间被追击、救人、倒地吃掉了。
+这从另一个角度再次否定了「拖时间保平」的假设。</p>
+<h2>2. 同用时对比：平局是不是修得更多</h2>
+<p>把秒倒样本里的每个平局，按用时 ±30 秒去匹配屠胜局（60 对）：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>破译总量中位</th>
+<th>破译/秒</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>保平局</td>
+<td><strong>540</strong></td>
+<td><strong>1.81</strong></td>
+</tr>
+<tr>
+<td>屠胜局</td>
+<td>513</td>
+<td>1.42</td>
+</tr>
+<tr>
+<td>差</td>
+<td><strong>+25</strong>（均值 +53）</td>
+<td>+0.39</td>
+</tr>
+</tbody>
+</table>
+<p>同样长的时间里，保平局多修了 25 个单位的机（中位），效率高 27%。
+<strong>决定结果的是「单位时间修了多少」，不是「打了多久」。</strong></p>
+<h2>3. 把 BP 变成可测量的变量</h2>
+<p>阵容的修机能力不能直接用「本局破译量」（那是结果），所以用角色级先验：</p>
+<blockquote>
+<p>对每个角色，统计它在本赛季所有出场中「破译量 / 用时」的中位数，作为该角色的修机倾向；
+一套阵容的修机能力 = 四名角色之和。</p>
+</blockquote>
+<p>（该指标与实测团队破译速率相关 r=0.141，方向对但噪声大，属于粗代理。）</p>
+<p>角色修机倾向（每秒破译量，样本 ≥8）：</p>
+<table>
+<thead>
+<tr>
+<th>高</th>
+<th>值</th>
+<th>低</th>
+<th>值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>法罗女士</td>
+<td>0.716</td>
+<td>玩具商</td>
+<td>0.027</td>
+</tr>
+<tr>
+<td>冒险家</td>
+<td>0.687</td>
+<td>空军</td>
+<td>0.317</td>
+</tr>
+<tr>
+<td>调酒师</td>
+<td>0.652</td>
+<td>哭泣小丑</td>
+<td>0.328</td>
+</tr>
+<tr>
+<td>邮差</td>
+<td>0.614</td>
+<td>园丁</td>
+<td>0.352</td>
+</tr>
+<tr>
+<td>作曲家</td>
+<td>0.599</td>
+<td>前锋</td>
+<td>0.354</td>
+</tr>
+</tbody>
+</table>
+<h2>4. 修机阵容真的提高保平率吗</h2>
+<p>按阵容修机能力三分位分组：</p>
+<p><strong>全体 873 场</strong></p>
+<table>
+<thead>
+<tr>
+<th>分组</th>
+<th>场次</th>
+<th>保平率</th>
+<th>屠胜率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>低</td>
+<td>286</td>
+<td>44.1%</td>
+<td>42.0%</td>
+</tr>
+<tr>
+<td>中</td>
+<td>298</td>
+<td>45.0%</td>
+<td>43.6%</td>
+</tr>
+<tr>
+<td>高</td>
+<td>289</td>
+<td><strong>54.7%</strong></td>
+<td><strong>34.6%</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>秒倒子样本 165 场</strong>（关键）</p>
+<table>
+<thead>
+<tr>
+<th>分组</th>
+<th>场次</th>
+<th>保平率</th>
+<th>屠胜率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>低</td>
+<td>48</td>
+<td><strong>25.0%</strong></td>
+<td>75.0%</td>
+</tr>
+<tr>
+<td>中</td>
+<td>52</td>
+<td>36.5%</td>
+<td>63.5%</td>
+</tr>
+<tr>
+<td>高</td>
+<td>65</td>
+<td><strong>43.1%</strong></td>
+<td>49.2%</td>
+</tr>
+</tbody>
+</table>
+<p>单调递增，且差距很大：<strong>同样是秒倒，修机阵容能把保平率从 25% 拉到 43%。</strong></p>
+<p>逻辑回归（结果=屠胜，处理=阵容修机能力）：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>OR（每 +1 SD）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>仅 comp</td>
+<td>0.57</td>
+</tr>
+<tr>
+<td>+ 地图 + 监管者</td>
+<td>0.57</td>
+</tr>
+<tr>
+<td>+ 双方队伍固定效应</td>
+<td><strong>0.53</strong></td>
+</tr>
+</tbody>
+</table>
+<p>加队伍固定效应后几乎不变，说明这不是「强队爱选修机阵容」造成的。
+换算：阵容修机能力每高 1 个标准差，秒倒后被打成三抓以上的几率降低约 <strong>47%</strong>。</p>
+<h2>5. 结论</h2>
+<ol>
+<li><strong>时间是结果不是原因</strong>：拖时间不产机，反而伴随效率下降。</li>
+<li><strong>保平的关键是单位时间破译量</strong>：同用时下，平局比屠胜多修 25 机（中位）、效率高 27%。</li>
+<li><strong>BP 确实影响保平</strong>：阵容修机能力每 +1 SD，秒倒后屠胜几率 ×0.53；低修机阵容秒倒后保平率仅 25%，高修机阵容 43%。</li>
+<li>这给出一条可操作的 BP 原则：<strong>在明知可能被秒倒的对局里，优先保证阵容的修机下限</strong>，而不是堆牵制/救援。</li>
+</ol>
+<h2>6. 局限</h2>
+<ul>
+<li>「角色修机倾向」是用同一批数据估的，有噪声（与实测相关仅 0.14），只能当粗指标。</li>
+<li>阵容是队伍自选的，存在「强队偏好高修机阵容」的残余混杂（队伍 FE 已部分控制）。</li>
+<li>秒倒子样本 165 场，三分位后每格约 50，置信区间不窄。</li>
+<li>破译总量是赛后统计，不是过程中的实时机数；真正的因果需要「首倒时已修机数」这类时间轴数据。</li>
+</ul>
+<footer>数据：2026 IVL 894 个半场 · 第五人格BWIKI 赛事数据库</footer>
+</div></body></html>
